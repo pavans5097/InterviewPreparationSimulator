@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run Interview Preparation Simulator",
+            "request": "launch",
+            "mainClass": "com.ips.Main",
+            "env": {
+                "IPS_DB_USER": "root",
+                "IPS_DB_PASSWORD": "root5097"
+            }
+        }
+    ]
+}

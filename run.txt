@@ -1,0 +1,25 @@
+cd "D:\oops project\InterviewPreparationSimulator"
+
+$files = Get-ChildItem ".\src\main\java" -Recurse -Filter "*.java" |
+    ForEach-Object { $_.FullName }
+
+Write-Host "Java files found:" $files.Count
+
+New-Item -ItemType Directory -Force ".\out" | Out-Null
+
+$jarFile = Get-ChildItem ".\lib" -Filter "mysql-connector-j-*.jar" |
+    Select-Object -First 1
+
+if ($jarFile) {
+    javac --release 21 -cp $jarFile.FullName -d ".\out" $files
+} else {
+    javac --release 21 -d ".\out" $files
+}
+
+if ($LASTEXITCODE -eq 0) {
+    if ($jarFile) {
+        java -cp ".\out;$($jarFile.FullName)" com.ips.Main
+    } else {
+        java -cp ".\out" com.ips.Main
+    }
+}

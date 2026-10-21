@@ -1,0 +1,17 @@
+INTERVIEW PREPARATION SIMULATOR
+
+Simple setup (no Maven and no GitHub needed)
+
+1. Install JDK 21 and the VS Code Extension Pack for Java.
+2. Open this whole InterviewPreparationSimulator folder in VS Code.
+3. Copy the MySQL Connector/J .jar file into the lib folder.
+4. Open database/schema.sql in MySQL Workbench and run it.
+5. Make sure MySQL is running. The default database login is root with an empty password.
+6. Open src/main/java/com/ips/Main.java.
+7. Click Run above the main method, or press F5 and choose "Run Interview Preparation Simulator".
+
+If your MySQL username/password is different, change IPS_DB_USER and IPS_DB_PASSWORD
+in .vscode/launch.json.
+
+The out folder is created automatically by VS Code when compiling. You do not need
+pom.xml, Maven, or GitHub.
