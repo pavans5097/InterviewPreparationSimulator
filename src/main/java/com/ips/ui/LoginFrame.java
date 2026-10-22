@@ -1,4 +1,5 @@
 package com.ips.ui;
+
 import com.ips.model.User;
 import com.ips.service.AuthService;
 import javax.swing.*;

@@ -1,5 +1,7 @@
 package com.ips;
+
 import com.ips.ui.LoginFrame;
+
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 

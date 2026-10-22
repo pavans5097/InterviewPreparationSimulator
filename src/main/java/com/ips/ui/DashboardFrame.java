@@ -1,6 +1,7 @@
 package com.ips.ui;
 
 import com.ips.dao.QuestionDAO;
+import com.ips.dao.FeatureDAO;
 import com.ips.model.Question;
 import com.ips.model.User;
 
@@ -60,7 +61,7 @@ public class DashboardFrame extends JFrame {
         if (user.getEmail().equalsIgnoreCase(adminEmail)) {
             content.add(featureCard("Admin question bank", "Add, edit, and delete questions in the MySQL question bank.", "Manage questions", () -> new AdminFrame().setVisible(true)));
         } else {
-            content.add(featureCard("Keep improving", "Use your analytics to focus on subjects where your accuracy is lower.", "View analytics", () -> new AnalyticsFrame(user).setVisible(true)));
+            content.add(featureCard("Keep improving", "Find your weakest subject from your saved answers and practise it next.", "Practise weak subject", this::openImprovement));
         }
 
         JLabel footer = new JLabel("Java Swing • JDBC • MySQL   |   Your progress is saved automatically.");
@@ -124,6 +125,60 @@ public class DashboardFrame extends JFrame {
                     "No questions", JOptionPane.WARNING_MESSAGE);
         }
         return categories;
+    }
+
+    private void openImprovement() {
+        try {
+            List<String[]> results = new FeatureDAO().subjectStats(user.getId());
+            if (results.isEmpty()) {
+                int choice = JOptionPane.showConfirmDialog(this,
+                        "You do not have any saved answers yet. Start a practice quiz to get a personalised recommendation?",
+                        "Keep improving", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                if (choice == JOptionPane.YES_OPTION) openPractice();
+                return;
+            }
+
+            String weakestSubject = null;
+            double lowestAccuracy = Double.MAX_VALUE;
+            int attempted = 0;
+            for (String[] row : results) {
+                int subjectAttempted = Integer.parseInt(row[1]);
+                double accuracy = Double.parseDouble(row[3]);
+                if (subjectAttempted > 0 && accuracy < lowestAccuracy) {
+                    lowestAccuracy = accuracy;
+                    weakestSubject = row[0];
+                    attempted = subjectAttempted;
+                }
+            }
+
+            if (weakestSubject == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Complete a practice quiz or mock interview first to get a recommendation.",
+                        "Keep improving", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            int choice = JOptionPane.showConfirmDialog(this,
+                    "Your recommended subject is: " + weakestSubject + "\nAccuracy: "
+                            + String.format(java.util.Locale.US, "%.1f%%", lowestAccuracy)
+                            + "\nAnswers recorded: " + attempted
+                            + "\n\nWould you like to practise this subject now?",
+                    "Your next step", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            if (choice == JOptionPane.YES_OPTION) {
+                List<Question> questions = new QuestionDAO().getQuestions(weakestSubject);
+                if (questions.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "No questions are available for " + weakestSubject + ".");
+                    return;
+                }
+                new PracticeFrame(user, weakestSubject, questions).setVisible(true);
+            }
+        } catch (SQLException | NumberFormatException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Could not generate a recommendation. Check the database connection and saved results.\n"
+                            + ex.getMessage(),
+                    "Recommendation error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void openPractice() {

@@ -15,7 +15,7 @@ public final class DBConnection {
     public static Connection getConnection() throws SQLException {
         String url = System.getenv().getOrDefault("IPS_DB_URL", DEFAULT_URL);
         String user = System.getenv().getOrDefault("IPS_DB_USER", "root");
-        String password = System.getenv().getOrDefault("IPS_DB_PASSWORD", "");
+        String password = System.getenv().getOrDefault("IPS_DB_PASSWORD", "root5097");
 
         return DriverManager.getConnection(url, user, password);
     }
